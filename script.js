@@ -14,7 +14,9 @@ const path = d3.geoPath().projection(projection);
 d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function(us) {
     d3.csv("data/1976-2020-president.csv").then(function(data) {
         const states = topojson.feature(us, us.objects.states).features;
+        
         const years = [...new Set(data.map(d => d.year))];
+        
         const select = d3.select("#year-select");
         select.selectAll("option")
             .data(years)
@@ -22,7 +24,7 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
             .append("option")
             .text(d => d)
             .attr("value", d => d);
-        
+
         updateMap(years[0]);
 
         select.on("change", function() {
@@ -33,9 +35,11 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
         function updateMap(year) {
             const yearData = data.filter(d => d.year == year);
             const stateVotes = d3.rollup(yearData, 
-                v => d3.sum(v, d => d.candidatevotes), 
-                d => d.state_po,
-                d => d.party_simplified
+                v => ({
+                    REPUBLICAN: d3.sum(v.filter(d => d.party_simplified == 'REPUBLICAN'), d => d.candidatevotes),
+                    DEMOCRAT: d3.sum(v.filter(d => d.party_simplified == 'DEMOCRAT'), d => d.candidatevotes)
+                }),
+                d => d.state_po
             );
 
             svg.selectAll(".state")
@@ -46,16 +50,16 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
                 .attr("fill", d => {
                     const state = stateVotes.get(d.properties.name);
                     if (!state) return "#ccc";
-                    const repVotes = state.get("REPUBLICAN") || 0;
-                    const demVotes = state.get("DEMOCRAT") || 0;
+                    const repVotes = state.REPUBLICAN || 0;
+                    const demVotes = state.DEMOCRAT || 0;
                     return repVotes > demVotes ? "red" : "blue";
                 })
                 .on("mouseover", function(event, d) {
                     const tooltip = d3.select("#tooltip");
                     const state = stateVotes.get(d.properties.name);
                     if (!state) return;
-                    const repVotes = state.get("REPUBLICAN") || 0;
-                    const demVotes = state.get("DEMOCRAT") || 0;
+                    const repVotes = state.REPUBLICAN || 0;
+                    const demVotes = state.DEMOCRAT || 0;
                     tooltip.transition().duration(200).style("opacity", .9);
                     tooltip.html(`State: ${d.properties.name}<br>Republican: ${repVotes}<br>Democrat: ${demVotes}`)
                         .style("left", (event.pageX) + "px")
