@@ -57,7 +57,7 @@ const projection = d3.geoAlbersUsa()
 
 const path = d3.geoPath().projection(projection);
 
-d3.json('https://d3js.org/us-10m.v1.json').then(us => {
+d3.json('https://d3js.org/us-10m.v2.json').then(us => {
     svg.append('g')
         .attr('class', 'states')
       .selectAll('path')
