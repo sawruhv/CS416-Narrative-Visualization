@@ -48,7 +48,10 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
                 .attr("class", "state")
                 .attr("d", path)
                 .attr("fill", d => {
-                    const state = stateVotes.get(d.properties.name);
+                    console.log("State:", d.properties.name, "Abbreviation:", d.id);
+                    
+                    // const state = stateVotes.get(d.properties.name);
+                    const state = stateVotes.get(d.id);
                     if (!state) return "#ccc";
                     const repVotes = state.REPUBLICAN || 0;
                     const demVotes = state.DEMOCRAT || 0;
