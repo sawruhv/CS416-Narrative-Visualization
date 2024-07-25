@@ -1,21 +1,14 @@
 let currentState = 0;
 
 document.getElementById("nextButton").addEventListener("click", () => {
-    currentState = (currentState + 1) % 3;
+    currentState = (currentState + 1) % 1; 
     updateScene();
 });
 
 function updateScene() {
     d3.selectAll(".scene").classed("active", false);
-    d3.select("#scene" + (currentState + 1)).classed("active", true);
-
-    if (currentState === 0) {
-        createMapScene("#scene1");
-    } else if (currentState === 1) {
-        createMapScene("#scene2");
-    } else if (currentState === 2) {
-        createMapScene("#scene3");
-    }
+    d3.select("#scene1").classed("active", true);
+    createMapScene("#scene1");
 }
 
 function createMapScene(container) {
