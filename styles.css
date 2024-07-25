@@ -2,16 +2,13 @@ body {
     font-family: Arial, sans-serif;
 }
 
-#container {
-    width: 80%;
-    margin: auto;
-    text-align: center;
+#map {
+    width: 100%;
+    height: 600px;
 }
 
-.scene {
-    display: none;
-}
-
-.active {
-    display: block;
+.state {
+    fill: #ccc;
+    stroke: #333;
+    stroke-width: 1;
 }
