@@ -45,44 +45,37 @@
 // updateScene();
 
 document.addEventListener("DOMContentLoaded", function() {
-    createMapScene("#scene1");
+    drawUSMap();
 });
 
-function createMapScene(container) {
-    d3.select(container).html("");
-    d3.json("https://d3js.org/us-10m.v1.json").then(us => {
-        console.log("US TopoJSON data:", us); 
-        renderMap(container, us);
-    });
-}
+function drawUSMap() {
+    const width = 975;
+    const height = 610;
 
-function renderMap(container, us) {
-    const width = 960;
-    const height = 600;
-
-    const svg = d3.select(container).append("svg")
+    const svg = d3.select("#map").append("svg")
         .attr("width", width)
         .attr("height", height);
 
     const projection = d3.geoAlbersUsa()
-        .scale(1280)
-        .translate([width / 2, height / 2]);
+        .scale(1300)
+        .translate([487.5, 305]);
 
-    const path = d3.geoPath().projection(projection);
+    const path = d3.geoPath(projection);
 
-    const states = topojson.feature(us, us.objects.states).features;
-    console.log("States data:", states);  
+    d3.json("https://d3js.org/us-10m.v1.json").then(us => {
+        svg.append("g")
+            .selectAll("path")
+            .data(topojson.feature(us, us.objects.states).features)
+            .enter().append("path")
+            .attr("d", path)
+            .attr("fill", "none")
+            .attr("stroke", "#000");
 
-    svg.append("g")
-        .selectAll("path")
-        .data(states)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("fill", "none")
-        .attr("stroke", "#000")
-        .attr("stroke-width", "1px");
-    
-    console.log("Rendered US map with state outlines");
+        svg.append("path")
+            .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+            .attr("fill", "none")
+            .attr("stroke", "#fff")
+            .attr("stroke-linejoin", "round")
+            .attr("d", path);
+    });
 }
-
-createMapScene("#scene1");
