@@ -65,13 +65,13 @@ function renderMap(container, us) {
         .attr("height", height);
 
     const projection = d3.geoAlbersUsa()
-        .scale(1300)
+        .scale(1000)
         .translate([width / 2, height / 2]);
 
     const path = d3.geoPath().projection(projection);
 
     const states = topojson.feature(us, us.objects.states).features;
-    console.log("States data:", states);  // Log the states data
+    console.log("States data:", states); 
 
     svg.append("g")
         .selectAll("path")
@@ -82,7 +82,14 @@ function renderMap(container, us) {
         .attr("stroke", "#fff")
         .attr("stroke-width", "1px");
 
-    console.log("Rendered US map with paths");
-}
+    svg.append("path")
+        .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+        .attr("class", "state-borders")
+        .attr("d", path)
+        .attr("fill", "none")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", "1.5px");
 
+    console.log("Rendered US map with paths and borders");
+}
 createMapScene("#scene1");
