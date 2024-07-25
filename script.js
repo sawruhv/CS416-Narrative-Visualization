@@ -12,7 +12,7 @@ const projection = d3.geoAlbersUsa()
 const path = d3.geoPath().projection(projection);
 
 d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function(us) {
-    d3.csv("/mnt/data/1976-2020-president.csv").then(function(data) {
+    d3.csv("/data/1976-2020-president.csv").then(function(data) {
         const states = topojson.feature(us, us.objects.states).features;
         const years = [...new Set(data.map(d => d.year))];
         const select = d3.select("#year-select");
