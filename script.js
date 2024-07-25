@@ -57,7 +57,7 @@ const projection = d3.geoAlbersUsa()
 
 const path = d3.geoPath().projection(projection);
 
-d3.json("https://d3js.org/us-10m.v1.json").then(function(us) {
+d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function(us) {
     const states = topojson.feature(us, us.objects.states).features;
 
     svg.selectAll(".state")
