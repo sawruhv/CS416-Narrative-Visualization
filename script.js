@@ -80,7 +80,6 @@ function createElectionMap(container, data, title) {
     const projection = d3.geoAlbersUsa().scale(1000).translate([width / 2, height / 2]);
     const path = d3.geoPath().projection(projection);
 
-    // load & display the map
     d3.json("https://d3js.org/us-10m.v1.json").then(us => {
         console.log("US map data loaded:", us);
         svg.append("g")
@@ -92,11 +91,11 @@ function createElectionMap(container, data, title) {
                 const statePostal = stateFipsToPostal[d.id];
                 const stateData = data.find(s => s.state_po === statePostal);
                 console.log("State data for", statePostal, ":", stateData);
-                if (!stateData) return "#ccc";
+                if (!stateData) return "#ccc"; // Fallback color for states without data
                 return stateData.party_detailed === "DEMOCRAT" ? "blue" : "red";
             });
 
-        // TODO update
+        // TODO
         const annotations = [
             {
                 note: {
@@ -118,4 +117,5 @@ function createElectionMap(container, data, title) {
     });
 }
 
+// Initialize the first scene
 updateScene();
