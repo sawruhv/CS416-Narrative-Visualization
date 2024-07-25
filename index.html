@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>US General Elections Narrative Visualization</title>
@@ -15,6 +15,31 @@
         <div id="scene3" class="scene"></div>
         <button id="nextButton">Next</button>
     </div>
+    <script src="script.js"></script>
+</body>
+</html> -->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>US Map Visualization</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .scene {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="scene1" class="scene active"></div>
+    <button id="nextButton">Next</button>
     <script src="script.js"></script>
 </body>
 </html>
