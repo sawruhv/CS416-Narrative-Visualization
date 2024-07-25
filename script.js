@@ -63,8 +63,8 @@ function createScene3() {
 }
 
 function createElectionMap(container, data, title) {
-    const width = 800;
-    const height = 500;
+    const width = 960;
+    const height = 600;
 
     const svg = d3.select(container).append("svg")
         .attr("width", width)
@@ -77,31 +77,31 @@ function createElectionMap(container, data, title) {
         .style("font-size", "24px")
         .text(title);
 
-    const projection = d3.geoAlbersUsa().scale(1000).translate([width / 2, height / 2]);
+    const projection = d3.geoAlbersUsa()
+        .scale(1280)
+        .translate([width / 2, height / 2]);
+
     const path = d3.geoPath().projection(projection);
 
     d3.json("https://d3js.org/us-10m.v1.json").then(us => {
         console.log("US map data loaded:", us);
 
-        const states = topojson.feature(us, us.objects.states).features;
-        console.log("States data:", states);
-
         svg.append("g")
+            .attr("class", "states")
             .selectAll("path")
-            .data(states)
+            .data(topojson.feature(us, us.objects.states).features)
             .enter().append("path")
             .attr("d", path)
             .attr("fill", d => {
                 const statePostal = stateFipsToPostal[d.id];
                 const stateData = data.find(s => s.state_po === statePostal);
                 console.log("State data for", statePostal, ":", stateData);
-                if (!stateData) return "#ccc"; // Fallback color for states without data
+                if (!stateData) return "#ccc"; 
                 return stateData.party_detailed === "DEMOCRAT" ? "blue" : "red";
             })
             .attr("stroke", "#fff")
             .attr("stroke-width", "1px");
-            
-        // TODO
+
         const annotations = [
             {
                 note: {
@@ -123,5 +123,4 @@ function createElectionMap(container, data, title) {
     });
 }
 
-// Initialize the first scene
 updateScene();
