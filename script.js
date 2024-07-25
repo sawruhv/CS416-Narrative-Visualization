@@ -86,5 +86,3 @@ function renderMap(container, us) {
 }
 
 createMapScene("#scene1");
-
-createMapScene("#scene1");
