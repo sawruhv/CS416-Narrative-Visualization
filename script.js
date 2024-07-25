@@ -44,33 +44,25 @@
 
 // updateScene();
 
-const width = document.getElementById('map').clientWidth;
-const height = document.getElementById('map').clientHeight;
+const width = 960;
+const height = 600;
 
-const svg = d3.select('#map').append('svg')
-    .attr('width', width)
-    .attr('height', height);
+const svg = d3.select("#map").append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
 const projection = d3.geoAlbersUsa()
-    .translate([width / 2, height / 2])
-    .scale([1000]);
+    .scale(1000)
+    .translate([width / 2, height / 2]);
 
 const path = d3.geoPath().projection(projection);
 
-d3.json('https://d3js.org/us-10m.v2.json').then(us => {
-    svg.append('g')
-        .attr('class', 'states')
-      .selectAll('path')
-        .data(topojson.feature(us, us.objects.states).features)
-      .enter().append('path')
-        .attr('d', path)
-        .attr('class', 'state');
-    
-    svg.append('path')
-        .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
-        .attr('class', 'state-borders')
-        .attr('d', path)
-        .attr('fill', 'none')
-        .attr('stroke', '#333')
-        .attr('stroke-width', '1');
+d3.json("https://d3js.org/us-10m.v1.json").then(function(us) {
+    const states = topojson.feature(us, us.objects.states).features;
+
+    svg.selectAll(".state")
+        .data(states)
+        .enter().append("path")
+        .attr("class", "state")
+        .attr("d", path);
 });
