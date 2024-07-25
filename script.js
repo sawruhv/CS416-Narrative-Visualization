@@ -51,6 +51,7 @@ document.getElementById("nextButton").addEventListener("click", () => {
 function createMapScene(container) {
     d3.select(container).html("");
     d3.json("https://d3js.org/us-10m.v1.json").then(us => {
+        console.log("US TopoJSON data:", us); 
         renderMap(container, us);
     });
 }
@@ -64,21 +65,24 @@ function renderMap(container, us) {
         .attr("height", height);
 
     const projection = d3.geoAlbersUsa()
-        .scale(1000)
+        .scale(1300)
         .translate([width / 2, height / 2]);
 
     const path = d3.geoPath().projection(projection);
 
+    const states = topojson.feature(us, us.objects.states).features;
+    console.log("States data:", states);  // Log the states data
+
     svg.append("g")
         .selectAll("path")
-        .data(topojson.feature(us, us.objects.states).features)
+        .data(states)
         .enter().append("path")
         .attr("d", path)
         .attr("fill", "#ccc")
         .attr("stroke", "#fff")
         .attr("stroke-width", "1px");
 
-    console.log("Rendered US map with paths:", topojson.feature(us, us.objects.states).features);
+    console.log("Rendered US map with paths");
 }
 
 createMapScene("#scene1");
