@@ -99,4 +99,4 @@ function drawUSMap() {
   }
 }
 
-// drawUSMap();
+drawUSMap();
