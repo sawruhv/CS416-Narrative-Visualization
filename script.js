@@ -44,59 +44,33 @@
 
 // updateScene();
 
-document.addEventListener("DOMContentLoaded", function() {
-    drawUSMap();
-});
+const width = document.getElementById('map').clientWidth;
+const height = document.getElementById('map').clientHeight;
 
-function drawUSMap() {
-    // const width = 975;
-    // const height = 610;
+const svg = d3.select('#map').append('svg')
+    .attr('width', width)
+    .attr('height', height);
 
-    // const svg = d3.select("#map").append("svg")
-    //     .attr("width", width)
-    //     .attr("height", height);
+const projection = d3.geoAlbersUsa()
+    .translate([width / 2, height / 2])
+    .scale([1000]);
 
-    // const projection = d3.geoAlbersUsa()
-    //     .scale(1300)
-    //     .translate([487.5, 305]);
+const path = d3.geoPath().projection(projection);
 
-    // const path = d3.geoPath(projection);
-
-    // d3.json("https://d3js.org/us-10m.v1.json").then(us => {
-    //     svg.append("g")
-    //         .selectAll("path")
-    //         .data(topojson.feature(us, us.objects.states).features)
-    //         .enter().append("path")
-    //         .attr("d", path)
-    //         .attr("fill", "none")
-    //         .attr("stroke", "#000");
-
-    //     svg.append("path")
-    //         .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
-    //         .attr("fill", "none")
-    //         .attr("stroke", "#fff")
-    //         .attr("stroke-linejoin", "round")
-    //         .attr("d", path);
-    // });
-    const us = await d3.json('https://d3js.org/us-10m.v2.json');
-    const data = topojson.feature(us, us.objects.states).features;
-
-    const width = 960;
-    const height = 600;
-    const svg = d3.select('body')
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height);
-
-    const path = d3.geoPath();
-
+d3.json('https://d3js.org/us-10m.v1.json').then(us => {
     svg.append('g')
+        .attr('class', 'states')
       .selectAll('path')
-      .data(data)
-      .enter()
-      .append('path')
-      .attr('d', path);
-  }
-}
-
-drawUSMap();
+        .data(topojson.feature(us, us.objects.states).features)
+      .enter().append('path')
+        .attr('d', path)
+        .attr('class', 'state');
+    
+    svg.append('path')
+        .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+        .attr('class', 'state-borders')
+        .attr('d', path)
+        .attr('fill', 'none')
+        .attr('stroke', '#333')
+        .attr('stroke-width', '1');
+});
