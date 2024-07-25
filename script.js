@@ -82,9 +82,13 @@ function createElectionMap(container, data, title) {
 
     d3.json("https://d3js.org/us-10m.v1.json").then(us => {
         console.log("US map data loaded:", us);
+
+        const states = topojson.feature(us, us.objects.states).features;
+        console.log("States data:", states);
+
         svg.append("g")
             .selectAll("path")
-            .data(topojson.feature(us, us.objects.states).features)
+            .data(states)
             .enter().append("path")
             .attr("d", path)
             .attr("fill", d => {
@@ -93,8 +97,10 @@ function createElectionMap(container, data, title) {
                 console.log("State data for", statePostal, ":", stateData);
                 if (!stateData) return "#ccc"; // Fallback color for states without data
                 return stateData.party_detailed === "DEMOCRAT" ? "blue" : "red";
-            });
-
+            })
+            .attr("stroke", "#fff")
+            .attr("stroke-width", "1px");
+            
         // TODO
         const annotations = [
             {
