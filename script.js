@@ -79,3 +79,5 @@ function drawUSMap() {
             .attr("d", path);
     });
 }
+
+drawUSMap();
