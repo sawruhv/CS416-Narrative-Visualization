@@ -22,12 +22,37 @@
             border-radius: 8px;
             pointer-events: none;
         }
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .summary div {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 45%;
+            background: #f9f9f9;
+        }
     </style>
 </head>
 <body>
     <h1>US Presidential Elections Map</h1>
     <label for="year-select">Select Year:</label>
     <select id="year-select"></select>
+    <div class="summary">
+        <div id="dem-summary">
+            <h2>Democrat Summary</h2>
+            <p>Total Votes: <span id="dem-votes">0</span></p>
+            <p>Total Electoral Votes: <span id="dem-electoral">0</span></p>
+            <p>Flipped States: <span id="dem-flipped">None</span></p>
+        </div>
+        <div id="rep-summary">
+            <h2>Republican Summary</h2>
+            <p>Total Votes: <span id="rep-votes">0</span></p>
+            <p>Total Electoral Votes: <span id="rep-electoral">0</span></p>
+            <p>Flipped States: <span id="rep-flipped">None</span></p>
+        </div>
+    </div>
     <div id="map"></div>
     <div class="tooltip" id="tooltip" style="opacity:0;"></div>
     <script src="script.js"></script>
