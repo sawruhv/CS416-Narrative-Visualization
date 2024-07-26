@@ -2,6 +2,19 @@ function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+const width = 960;
+const height = 600;
+
+const svg = d3.select("#map").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+const projection = d3.geoAlbersUsa()
+    .scale(1300)
+    .translate([width / 2, height / 2]);
+
+const path = d3.geoPath().projection(projection);
+
 d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function(us) {
     console.log("TopoJSON data loaded:", us);
 
