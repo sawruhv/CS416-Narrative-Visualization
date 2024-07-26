@@ -57,7 +57,7 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
             .text(d => d)
             .attr("value", d => d);
 
-        updateMap(years[-1]);
+        updateMap(years[years.length - 1]);
 
         select.on("change", function() {
             const selectedYear = this.value;
