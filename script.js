@@ -57,7 +57,10 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
             .text(d => d)
             .attr("value", d => d);
 
-        updateMap(years[years.length - 1]);
+        // updateMap(years[0]);
+        const initialYear = "2020";
+        updateMap(initialYear);
+        d3.select("#year-select").property("value", initialYear);
 
         select.on("change", function() {
             const selectedYear = this.value;
