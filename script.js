@@ -11,6 +11,19 @@ const stateIdToPostal = {
     "72": "PR", "78": "VI"
 };
 
+const electoralVotes = {
+    "AL": 9, "AK": 3, "AZ": 11, "AR": 6, "CA": 55, "CO": 9,
+    "CT": 7, "DE": 3, "DC": 3, "FL": 29, "GA": 16, "HI": 4,
+    "ID": 4, "IL": 20, "IN": 11, "IA": 6, "KS": 6, "KY": 8,
+    "LA": 8, "ME": 4, "MD": 10, "MA": 11, "MI": 16, "MN": 10,
+    "MS": 6, "MO": 10, "MT": 3, "NE": 5, "NV": 6, "NH": 4,
+    "NJ": 14, "NM": 5, "NY": 29, "NC": 15, "ND": 3, "OH": 18,
+    "OK": 7, "OR": 7, "PA": 20, "RI": 4, "SC": 9, "SD": 3,
+    "TN": 11, "TX": 38, "UT": 6, "VT": 3, "VA": 13, "WA": 12,
+    "WV": 5, "WI": 10, "WY": 3, "AS": 0, "GU": 0, "MP": 0,
+    "PR": 0, "VI": 0
+};
+
 const width = 960;
 const height = 600;
 
@@ -65,6 +78,19 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
             );
             console.log("State votes for year", year, ":", stateVotes);
 
+            const demSummary = { totalVotes: 0, electoralVotes: 0, flippedStates: [] };
+            const repSummary = { totalVotes: 0, electoralVotes: 0, flippedStates: [] };
+
+            const previousYear = (parseInt(year) - 4).toString();
+            const previousYearData = data.filter(d => d.year == previousYear);
+            const previousStateVotes = d3.rollup(previousYearData,
+                v => ({
+                    REPUBLICAN: d3.sum(v.filter(d => d.party_simplified == 'REPUBLICAN'), d => d.candidatevotes),
+                    DEMOCRAT: d3.sum(v.filter(d => d.party_simplified == 'DEMOCRAT'), d => d.candidatevotes)
+                }),
+                d => d.state_po
+            );
+
             svg.selectAll(".state")
                 .data(states)
                 .join("path")
@@ -72,14 +98,34 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
                 .attr("d", path)
                 .attr("fill", d => {
                     const statePostal = stateIdToPostal[d.id];
-                    console.log("Processing state:", d.properties.name, "ID:", d.id, "Postal:", statePostal);
-                    
                     const state = stateVotes.get(statePostal);
-                    console.log("Votes for state:", state);
-                    
+
+                    // Determine flipped states
+                    const previousState = previousStateVotes.get(statePostal);
+                    if (previousState) {
+                        const previousWinner = previousState.REPUBLICAN > previousState.DEMOCRAT ? "REPUBLICAN" : "DEMOCRAT";
+                        const currentWinner = state.REPUBLICAN > state.DEMOCRAT ? "REPUBLICAN" : "DEMOCRAT";
+                        if (previousWinner !== currentWinner) {
+                            if (currentWinner === "DEMOCRAT") {
+                                demSummary.flippedStates.push(d.properties.name);
+                            } else {
+                                repSummary.flippedStates.push(d.properties.name);
+                            }
+                        }
+                    }
+
                     if (!state) return "#ccc";
                     const repVotes = state.REPUBLICAN || 0;
                     const demVotes = state.DEMOCRAT || 0;
+
+                    demSummary.totalVotes += demVotes;
+                    repSummary.totalVotes += repVotes;
+                    if (repVotes > demVotes) {
+                        repSummary.electoralVotes += electoralVotes[statePostal];
+                    } else {
+                        demSummary.electoralVotes += electoralVotes[statePostal];
+                    }
+
                     return repVotes > demVotes ? "red" : "blue";
                 })
                 .on("mouseover", function(event, d) {
@@ -90,13 +136,21 @@ d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function
                     const repVotes = state.REPUBLICAN || 0;
                     const demVotes = state.DEMOCRAT || 0;
                     tooltip.transition().duration(200).style("opacity", .9);
-                    tooltip.html(`State: ${d.properties.name}<br>Republican: ${repVotes}<br>Democrat: ${demVotes}`)
+                    tooltip.html(`State: ${d.properties.name}<br>Electoral Votes: ${electoralVotes[statePostal]}<br>Republican: ${repVotes}<br>Democrat: ${demVotes}`)
                         .style("left", (event.pageX) + "px")
                         .style("top", (event.pageY - 28) + "px");
                 })
                 .on("mouseout", function() {
                     d3.select("#tooltip").transition().duration(500).style("opacity", 0);
                 });
+
+            d3.select("#dem-votes").text(demSummary.totalVotes);
+            d3.select("#dem-electoral").text(demSummary.electoralVotes);
+            d3.select("#dem-flipped").text(demSummary.flippedStates.length > 0 ? demSummary.flippedStates.join(", ") : "None");
+
+            d3.select("#rep-votes").text(repSummary.totalVotes);
+            d3.select("#rep-electoral").text(repSummary.electoralVotes);
+            d3.select("#rep-flipped").text(repSummary.flippedStates.length > 0 ? repSummary.flippedStates.join(", ") : "None");
         }
     }).catch(function(error) {
         console.error("Error loading election data:", error);
