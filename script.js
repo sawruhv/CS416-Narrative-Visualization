@@ -14,7 +14,7 @@ const path = d3.geoPath().projection(projection);
 d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function(us) {
     console.log("TopoJSON data loaded:", us);
 
-    d3.csv("/mnt/data/1976-2020-president.csv").then(function(data) {
+    d3.csv("data/1976-2020-president.csv").then(function(data) {
         console.log("Election data loaded:", data);
 
         const states = topojson.feature(us, us.objects.states).features;
